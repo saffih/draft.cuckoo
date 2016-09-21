@@ -1,25 +1,87 @@
-import akka.actor.ActorRef;
-import akka.actor.UntypedActor;
-import akka.actor.ActorSystem;
-import akka.actor.Props;
-import akka.actor.Inbox;
+import akka.actor.*;
+import akka.stream.ActorMaterializer;
+import akka.stream.Materializer;
 import scala.concurrent.duration.Duration;
-import scala.concurrent.duration.FiniteDuration;
 
-import java.io.Serializable;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class HelloAkkaJava {
-    public static class Greet implements Serializable {}
+
+
+    public static class GotEvent implements Serializable {
+        DataEvent dataEvent;
+    }
+
+
+    public static class Collector extends UntypedActor {
+
+        public void onReceive(Object message) {
+            if (message instanceof GotEvent)
+            // publish that;
+            {
+                ;
+            } else {
+                unhandled(message);
+            }
+        }
+    }
+
+    public class StreamPoller extends UntypedActor {
+        StreamHelper sth = new StreamHelper(System.in);
+
+        private final Cancellable tick = getContext().system().scheduler().schedule(
+                Duration.create(500, TimeUnit.MILLISECONDS),
+                Duration.create(1, TimeUnit.SECONDS),
+                getSelf(), "tick", getContext().dispatcher(), null);
+
+        public StreamPoller() {
+
+        }
+
+        @Override
+        public void postStop() {
+            tick.cancel();
+        }
+
+
+        @Override
+        public void onReceive(Object message) throws Exception {
+            // for testing
+            if (message.equals("tick")) {
+                // do something useful here
+                for (String st; (st = sth.getString()) != null; ) {
+                    DataEvent de = DataEventHelper.fromJsonSilentFail(st);
+                    if (de != null) {
+                        getContext().parent().tell(de, getSelf());
+                    }
+                }
+            } // for testing
+            else if (message instanceof String) {
+                String st = (String) message;
+                this.sth = new StreamHelper(new ByteArrayInputStream(st.getBytes(StandardCharsets.UTF_8)));
+            } else {
+                unhandled(message);
+            }
+        }
+    }
+
+    public static class Greet implements Serializable {
+    }
+
     public static class WhoToGreet implements Serializable {
         public final String who;
+
         public WhoToGreet(String who) {
             this.who = who;
         }
     }
+
     public static class Greeting implements Serializable {
         public final String message;
+
         public Greeting(String message) {
             this.message = message;
         }
@@ -43,7 +105,8 @@ public class HelloAkkaJava {
     public static void main(String[] args) {
         try {
             // Create the 'helloakka' actor system
-            final ActorSystem system = ActorSystem.create("helloakka");
+            final ActorSystem system = ActorSystem.create("pandaaka");
+            final Materializer mat = ActorMaterializer.create(system);
 
             // Create the 'greeter' actor
             final ActorRef greeter = system.actorOf(Props.create(Greeter.class), "greeter");
