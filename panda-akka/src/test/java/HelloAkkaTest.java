@@ -1,3 +1,4 @@
+import actors.PandaAkkaJava;
 import scala.concurrent.duration.Duration;
 import akka.actor.*;
 import akka.testkit.JavaTestKit;
@@ -26,10 +27,10 @@ public class HelloAkkaTest {
     @Test
     public void testSetGreeter() {
         new JavaTestKit(system) {{
-            final TestActorRef<HelloAkkaJava.Greeter> greeter =
-                TestActorRef.create(system, Props.create(HelloAkkaJava.Greeter.class), "greeter1");
+            final TestActorRef<PandaAkkaJava.Greeter> greeter =
+                TestActorRef.create(system, Props.create(PandaAkkaJava.Greeter.class), "greeter1");
 
-            greeter.tell(new HelloAkkaJava.WhoToGreet("testkit"), getTestActor());
+            greeter.tell(new PandaAkkaJava.WhoToGreet("testkit"), getTestActor());
 
             Assert.assertEquals("hello, testkit", greeter.underlyingActor().greeting);
         }};
@@ -39,12 +40,12 @@ public class HelloAkkaTest {
     public void testGetGreeter() {
         new JavaTestKit(system) {{
 
-            final ActorRef greeter = system.actorOf(Props.create(HelloAkkaJava.Greeter.class), "greeter2");
+            final ActorRef greeter = system.actorOf(Props.create(PandaAkkaJava.Greeter.class), "greeter2");
 
-            greeter.tell(new HelloAkkaJava.WhoToGreet("testkit"), getTestActor());
-            greeter.tell(new HelloAkkaJava.Greet(), getTestActor());
+            greeter.tell(new PandaAkkaJava.WhoToGreet("testkit"), getTestActor());
+            greeter.tell(new PandaAkkaJava.Greet(), getTestActor());
 
-            final HelloAkkaJava.Greeting greeting = expectMsgClass(HelloAkkaJava.Greeting.class);
+            final PandaAkkaJava.Greeting greeting = expectMsgClass(PandaAkkaJava.Greeting.class);
 
             new Within(duration("10 seconds")) {
                 protected void run() {

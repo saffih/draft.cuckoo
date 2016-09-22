@@ -1,4 +1,4 @@
-/**
+package helper; /**
  * Created by saffi on 21/09/16.
  */
 
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-public class TestStreamHelper {
+public class StreamHelperTest {
     @Test
     public void testGoodMessage() throws IOException {
 String example=        "{{{{{ \"event_type\": \"baz\", \"data\": \"ipsum\", \"timestamp\": 1474449973 }\n" +

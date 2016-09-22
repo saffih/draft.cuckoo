@@ -1,3 +1,5 @@
+package dataevent;
+
 import com.google.gson.Gson;
 
 /**
@@ -9,7 +11,7 @@ public class DataEventHelper {
         Gson g=new Gson();
         return g.fromJson(st, DataEvent.class);
     }
-    static DataEvent fromJsonSilentFail(String st){
+    public static DataEvent fromJsonSilentFail(String st){
             try{
                 return fromJson(st);
             }

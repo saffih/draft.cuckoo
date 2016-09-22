@@ -1,3 +1,5 @@
+package helper;
+
 import java.io.*;
 
 /**
@@ -19,7 +21,7 @@ public class StreamHelper {
 
     }
 
-    String getString() throws IOException {
+    public String getString() throws IOException {
         String found = null;
         // todo use char []
         while (br.ready()){
